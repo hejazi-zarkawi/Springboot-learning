@@ -1,7 +1,6 @@
-package com.codingshuttle.hejazi.demo.impl;
+package com.codingshuttle.hejazi.demo.module1_introduction.impl;
 
-import com.codingshuttle.hejazi.demo.NotificationService;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import com.codingshuttle.hejazi.demo.module1_introduction.NotificationService;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 @Primary

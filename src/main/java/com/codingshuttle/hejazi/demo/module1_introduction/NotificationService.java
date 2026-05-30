@@ -1,4 +1,4 @@
-package com.codingshuttle.hejazi.demo;
+package com.codingshuttle.hejazi.demo.module1_introduction;
 
 public interface NotificationService {
 
