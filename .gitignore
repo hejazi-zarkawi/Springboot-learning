@@ -4,6 +4,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+
+data/h2db.mv.db
+data/h2db.trace.db
 ### STS ###
 .apt_generated
 .classpath

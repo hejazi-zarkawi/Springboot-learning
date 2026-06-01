@@ -3,12 +3,12 @@ package com.codingshuttle.hejazi.demo.module2_mvc_and_RestfulAPIs.springbootwebT
 import java.time.LocalDate;
 
 public class EmployeeDTO {
-    Long id;
-    String name;
-    String email;
-    Integer age;
-    LocalDate dateofjoining;
-    Boolean isActive;
+   private Long id;
+   private String name;
+   private String email;
+   private Integer age;
+   private LocalDate dateofjoining;
+   private Boolean isActive;
 
     public EmployeeDTO(){}
 
