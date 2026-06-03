@@ -5,8 +5,12 @@ import com.codingshuttle.hejazi.demo.module2_mvc_and_RestfulAPIs.springbootwebTu
 import com.codingshuttle.hejazi.demo.module2_mvc_and_RestfulAPIs.springbootwebTutorial.repositories.EmployeeRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,9 +25,11 @@ public class EmployeeService {
     }
 
 
-    public EmployeeDTO getEmployee(Long id) {
-        EmployeeEntity employee= employeeRepository.findById(id).orElse(null);
-        return mapper.map(employee, EmployeeDTO.class);
+    public Optional<EmployeeDTO> getEmployee(Long id) {
+        return employeeRepository.findById(id)
+                .map(employeeEntity -> {
+                   return mapper.map(employeeEntity,EmployeeDTO.class);
+                });
     }
 
     public List<EmployeeDTO> getAllEmployee() {
@@ -37,5 +43,46 @@ public class EmployeeService {
         EmployeeEntity toSaveEntity= mapper.map(inputEmployee, EmployeeEntity.class);
         EmployeeEntity createdEmployee= employeeRepository.save(toSaveEntity);
         return mapper.map(createdEmployee, EmployeeDTO.class);
+    }
+
+    public Optional<EmployeeDTO> updateEmployeeById(Long id, EmployeeDTO employeeDTO) {
+        return employeeRepository.findById(id)
+                .map((existingEmployee)->{
+                    mapper.map(employeeDTO,existingEmployee);
+                    existingEmployee.setId(id);
+                    EmployeeEntity savedEmployee= employeeRepository.save(existingEmployee);
+
+                    return mapper.map(existingEmployee,EmployeeDTO.class);
+                });
+
+    }
+
+    private boolean isEmployeeExist(Long id) {
+        return employeeRepository.existsById(id);
+    }
+
+    public Boolean deleteEmployeeById(Long id) {
+        boolean isExist= isEmployeeExist(id);
+        if(isExist){
+            employeeRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
+    public EmployeeDTO partialUpdateEmployee(Long id, Map<String,Object> employeeDTO) {
+        boolean isExist= isEmployeeExist(id);
+        if(!isExist){
+            return null;
+        }
+
+        EmployeeEntity employeeEntity= employeeRepository.findById(id).get();
+        employeeDTO.forEach((field,value)->{
+            Field fieldToBeUpdated= ReflectionUtils.findField(EmployeeEntity.class, field);
+            fieldToBeUpdated.setAccessible(true);
+            ReflectionUtils.setField(fieldToBeUpdated,employeeEntity,value);
+        });
+
+        return mapper.map(employeeRepository.save(employeeEntity), EmployeeDTO.class);
     }
 }
