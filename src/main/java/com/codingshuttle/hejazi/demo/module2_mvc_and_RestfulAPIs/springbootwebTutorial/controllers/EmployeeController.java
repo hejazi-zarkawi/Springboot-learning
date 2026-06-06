@@ -2,6 +2,7 @@ package com.codingshuttle.hejazi.demo.module2_mvc_and_RestfulAPIs.springbootwebT
 
 import com.codingshuttle.hejazi.demo.module2_mvc_and_RestfulAPIs.springbootwebTutorial.dto.EmployeeDTO;
 import com.codingshuttle.hejazi.demo.module2_mvc_and_RestfulAPIs.springbootwebTutorial.entities.EmployeeEntity;
+import com.codingshuttle.hejazi.demo.module2_mvc_and_RestfulAPIs.springbootwebTutorial.exceptions.ResourceNotFoundException;
 import com.codingshuttle.hejazi.demo.module2_mvc_and_RestfulAPIs.springbootwebTutorial.repositories.EmployeeRepository;
 import com.codingshuttle.hejazi.demo.module2_mvc_and_RestfulAPIs.springbootwebTutorial.services.EmployeeService;
 import jakarta.validation.Valid;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -35,9 +37,11 @@ public class EmployeeController {
          Optional<EmployeeDTO> employeeDTO= employeeService.getEmployee(id);
          return employeeDTO.map(employeeDTO1 -> {
              return ResponseEntity.ok(employeeDTO1);
-         }).orElse(ResponseEntity.notFound().build());
+         }).orElseThrow(()-> new ResourceNotFoundException("Element Not Found with id: "+id));
 
     }
+
+
     @GetMapping
     public ResponseEntity<List<EmployeeDTO>> getAllEmployee(@RequestParam(required=false) Integer age) {
         List<EmployeeDTO> employees = employeeService.getAllEmployee();

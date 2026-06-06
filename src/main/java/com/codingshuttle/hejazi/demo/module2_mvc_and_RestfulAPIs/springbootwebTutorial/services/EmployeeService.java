@@ -2,6 +2,7 @@ package com.codingshuttle.hejazi.demo.module2_mvc_and_RestfulAPIs.springbootwebT
 
 import com.codingshuttle.hejazi.demo.module2_mvc_and_RestfulAPIs.springbootwebTutorial.dto.EmployeeDTO;
 import com.codingshuttle.hejazi.demo.module2_mvc_and_RestfulAPIs.springbootwebTutorial.entities.EmployeeEntity;
+import com.codingshuttle.hejazi.demo.module2_mvc_and_RestfulAPIs.springbootwebTutorial.exceptions.ResourceNotFoundException;
 import com.codingshuttle.hejazi.demo.module2_mvc_and_RestfulAPIs.springbootwebTutorial.repositories.EmployeeRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,7 @@ public class EmployeeService {
     }
 
     public Optional<EmployeeDTO> updateEmployeeById(Long id, EmployeeDTO employeeDTO) {
+        isEmployeeExist(id);
         return employeeRepository.findById(id)
                 .map((existingEmployee)->{
                     mapper.map(employeeDTO,existingEmployee);
@@ -57,24 +59,23 @@ public class EmployeeService {
 
     }
 
-    private boolean isEmployeeExist(Long id) {
-        return employeeRepository.existsById(id);
+    private void isEmployeeExist(Long id) {
+
+       boolean exist= employeeRepository.existsById(id);
+       if(!exist){
+           throw new ResourceNotFoundException("Employee not found with id: "+id);
+       }
     }
 
     public Boolean deleteEmployeeById(Long id) {
-        boolean isExist= isEmployeeExist(id);
-        if(isExist){
-            employeeRepository.deleteById(id);
-            return true;
-        }
-        return false;
+        isEmployeeExist(id);
+
+        employeeRepository.deleteById(id);
+        return true;
     }
 
     public EmployeeDTO partialUpdateEmployee(Long id, Map<String,Object> employeeDTO) {
-        boolean isExist= isEmployeeExist(id);
-        if(!isExist){
-            return null;
-        }
+        isEmployeeExist(id);
 
         EmployeeEntity employeeEntity= employeeRepository.findById(id).get();
         employeeDTO.forEach((field,value)->{
